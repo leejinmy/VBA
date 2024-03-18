@@ -1,0 +1,44 @@
+Sub RunPythonAndWait()
+    Dim shell As Object
+    Dim pythonExe As String
+    Dim pythonScript As String
+    Dim waitOnReturn As Boolean
+    Dim windowStyle As Integer
+    Dim errorCode As Long
+    
+    ' 파이썬 실행 파일 경로
+    pythonExe = "C:\Path\To\Python\python.exe"
+    
+    ' 실행할 파이썬 스크립트 경로
+    pythonScript = "C:\Path\To\Your\PythonScript.py"
+
+
+
+    ' 쉘 객체 생성
+    Set shell = CreateObject("WScript.Shell")
+
+    
+
+    ' 실행하고 종료할 때까지 기다리는 옵션
+    waitOnReturn = True
+    windowStyle = 1
+
+   
+    ' 스크립트 실행 및 종료 대기
+    errorCode = shell.Run("""" & pythonExe & """ """ & pythonScript & """", windowStyle, waitOnReturn)  '앞에 실행 인스턴스 반영 (파이썬설치경로 공백 파이썬스크립트)
+
+    
+
+    ' 오류 코드 확인
+
+    If errorCode = 0 Then
+
+        MsgBox "Python script completed successfully"
+
+    Else
+
+        MsgBox "Python script returned error code " & errorCode
+
+    End If
+
+End Sub
