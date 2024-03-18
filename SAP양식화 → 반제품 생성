@@ -1,0 +1,66 @@
+Sub 반제품생성_STEP2()
+
+
+Dim ws_2 As Worksheet
+Set ws_2 = Worksheets("Sheet2")
+
+Dim i As Long
+Dim currentRow As Long
+Dim lastRow As Long
+
+Application.ScreenUpdating = False ' 성능 최적화를 위해 화면 업데이트 중지
+
+' 초기 마지막 행 설정
+lastRow = ws_2.Cells(ws_2.Rows.Count, "A").End(xlUp).Row
+
+' 기존 데이터 검사 및 조건에 따른 행 추가
+i = 4
+Do While i <= lastRow
+    If InStr(ws_2.Cells(i, "E").Value, "/") > 0 Then
+        ' "/'를 포함하는 경우 행 추가
+        ws_2.Rows(i + 1).Insert Shift:=xlDown, CopyOrigin:=xlFormatFromLeftOrAbove
+        lastRow = lastRow + 1 ' 새로운 행이 추가되었으므로 마지막 행 업데이트
+        
+        ' 복사할 데이터 설정 및 붙여넣기
+        With ws_2
+            .Cells(i + 1, "A").Value = .Cells(i, "A").Value
+            .Cells(i + 1, "B").Value = .Cells(i, "B").Value
+            .Cells(i + 1, "C").Value = .Cells(i, "C").Value
+            .Cells(i + 1, "D").Value = .Cells(i, "D").Value
+            ' "E" 열의 "/" 이후 텍스트 제거
+            .Cells(i + 1, "E").Value = Left(.Cells(i, "E").Value, InStr(.Cells(i, "E").Value, "/") - 1)
+            .Cells(i + 1, "F").Value = .Cells(i, "F").Value
+            .Cells(i + 1, "G").Value = .Cells(i, "G").Value
+            .Cells(i + 1, "I").Value = .Cells(i, "I").Value
+            .Cells(i + 1, "J").Value = .Cells(i, "J").Value
+            .Cells(i + 1, "K").Value = .Cells(i, "K").Value
+            .Cells(i + 1, "M").Value = .Cells(i, "M").Value
+            
+            ' 조건에 따른 "L" 열 데이터 설정
+            Dim conditionMet As Boolean
+            conditionMet = Not (.Cells(i, "G").Value = "E" Or .Cells(i, "G").Value = "D" Or .Cells(i, "G").Value = "EA" Or .Cells(i, "G").Value = "C")
+            If conditionMet Then
+                .Cells(i + 1, "L").Value = .Cells(i, "E").Value
+            Else
+                .Cells(i + 1, "L").ClearContents
+            End If
+        End With
+        
+        i = i + 2 ' 다음 행으로 이동 (추가된 행 건너뛰기)
+    Else
+        i = i + 1 ' "/" 를 포함하지 않는 경우, 다음 행으로 이동
+    End If
+Loop
+
+
+For i = 4 To lastRow
+    If InStr(ws_2.Cells(i, "E").Value, "/") > 0 Then
+        ws_2.Cells(i, "C").ClearContents
+    End If
+Next i
+
+
+
+Application.ScreenUpdating = True ' 화면 업데이트 재개
+
+End Sub
