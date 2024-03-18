@@ -59,8 +59,7 @@ Loop While F_AD <> F_Find.Address  'Do While Loop 문 Do While Loop 문은 While
 Next 입력카운터
 
 
-
-
+'숨기기 초기화(행 숨기기 취소) : Rows("8:1000").Hidden = False
 
 
 
