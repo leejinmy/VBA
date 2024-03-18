@@ -1,0 +1,48 @@
+Sub 종합실행()
+
+  Worksheets("재고 Data").Range("A2:L8000").ClearContents
+
+
+
+    Dim shell As Object
+    Dim pythonExe As String
+    Dim pythonScript As String
+    Dim waitOnReturn As Boolean
+    Dim windowStyle As Integer
+    Dim errorCode As Long
+    
+    ' 파이썬 실행 파일 경로
+    pythonExe = "C:\Users\user\AppData\Local\Programs\Python\Python312\python.exe"
+    
+    ' 실행할 파이썬 스크립트 경로
+    pythonScript = "C:\Users\user\Desktop\코딩\재고Data저장(셀레니움) 각공장 창고재고조회.py"
+    
+    ' 쉘 객체 생성
+    Set shell = CreateObject("WScript.Shell")
+    
+    ' 실행하고 종료할 때까지 기다리는 옵션
+    waitOnReturn = True
+    windowStyle = 1
+    
+    ' 스크립트 실행 및 종료 대기
+    errorCode = shell.Run("""" & pythonExe & """ """ & pythonScript & """", windowStyle, waitOnReturn)
+    
+    ' 오류 코드 확인
+    If errorCode = 0 Then
+        MsgBox "Python script completed successfully"
+    Else
+        MsgBox "Python script returned error code " & errorCode
+    End If
+
+
+
+
+ 
+  Call 최근파일열기
+  
+  Call Data복사
+
+   
+   Workbooks("포장제품입출고관리.xlsm").Save
+
+End Sub
