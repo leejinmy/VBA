@@ -1,0 +1,77 @@
+Sub Data복사()
+    Dim wb As Workbook
+    Dim arrWorkbooks() As Variant
+    Dim i As Long
+    Dim j As Long
+    Dim lastRow As Long
+    Dim targetSheet As Worksheet
+    
+    ' 현재 활성화된 워크북의 지정된 시트 설정
+    Set targetSheet = ThisWorkbook.Sheets("재고 Data") ' 목표 시트 이름으로 변경
+    
+    ThisWorkbook.Sheets("재고 Data").Range("A2:L10000").ClearContents
+    
+        
+    
+    
+    ' 열린 워크북의 배열 초기화
+    ReDim arrWorkbooks(1 To Application.Workbooks.Count, 1 To 2)
+    
+    ' 모든 열린 워크북 순회하며 배열에 저장 (수정 시간과 함께)
+    i = 0
+    For Each wb In Application.Workbooks
+        If Not wb Is ThisWorkbook Then
+            i = i + 1
+            arrWorkbooks(i, 1) = wb.Name
+            arrWorkbooks(i, 2) = wb.BuiltinDocumentProperties("Last Save Time")
+        End If
+    Next wb
+    
+    ' 수정 시간으로 배열 정렬
+    For i = 1 To UBound(arrWorkbooks) - 1
+        For j = i + 1 To UBound(arrWorkbooks)
+            If arrWorkbooks(i, 2) < arrWorkbooks(j, 2) Then
+                ' Swap names
+                Swap arrWorkbooks(i, 1), arrWorkbooks(j, 1)
+                ' Swap last save times
+                Swap arrWorkbooks(i, 2), arrWorkbooks(j, 2)
+            End If
+        Next j
+    Next i
+    
+    ' 상위 3개 워크북에서 데이터 복사
+    For i = 1 To WorksheetFunction.Min(3, UBound(arrWorkbooks))
+        Set wb = Workbooks(arrWorkbooks(i, 1))
+        
+        ' 복사할 데이터의 마지막 행 찾기
+        lastRow = targetSheet.Cells(targetSheet.Rows.Count, "A").End(xlUp).Row + 1
+        
+        ' 원본에서 데이터 복사
+        wb.Sheets(1).Range("A2").CurrentRegion.Copy
+        
+        ' 목표 시트에 붙여넣기
+        targetSheet.Cells(lastRow, 1).PasteSpecial Paste:=xlPasteValues
+        
+        ' 선택 해제
+        Application.CutCopyMode = False
+    Next i
+    
+    ' 완료 메시지
+    MsgBox "Top 3 latest workbooks' data have been copied.", vbInformation
+    
+    
+     For i = 1 To WorksheetFunction.Min(3, Application.Workbooks.Count)
+        Set wb = Workbooks(arrWorkbooks(i, 1))
+        ' 변경 사항을 저장하지 않고 워크북을 닫음
+        wb.Close SaveChanges:=False
+    Next i
+    
+    
+End Sub
+
+Sub Swap(ByRef Arg1 As Variant, ByRef Arg2 As Variant)
+    Dim Temp As Variant
+    Temp = Arg1
+    Arg1 = Arg2
+    Arg2 = Temp
+End Sub
