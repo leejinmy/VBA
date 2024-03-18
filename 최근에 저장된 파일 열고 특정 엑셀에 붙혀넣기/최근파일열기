@@ -1,0 +1,55 @@
+Sub 최근파일열기()
+    Dim folderPath As String
+    Dim fileSystem As Object
+    Dim folder As Object
+    Dim file As Object
+    Dim fileArray() As Variant
+    Dim i As Long
+    Dim j As Long
+    
+    ' 검색할 폴더 경로 설정
+    folderPath = "C:\Users\user\Downloads"
+    
+    ' FileSystemObject 초기화
+    Set fileSystem = CreateObject("Scripting.FileSystemObject")
+    Set folder = fileSystem.GetFolder(folderPath)
+    
+    ' 파일 배열 초기화
+    ReDim fileArray(1 To folder.Files.Count, 1 To 2)
+    i = 0
+    
+    ' 폴더 내의 모든 파일에 대해 확인
+    For Each file In folder.Files
+        ' 파일의 확장자가 .xls 또는 .xlsx 인지 확인
+        If LCase(file.Name) Like "*.xls*" Then
+            i = i + 1
+            fileArray(i, 1) = file.DateLastModified
+            fileArray(i, 2) = file.Path
+        End If
+    Next file
+    
+    ' 파일 배열을 날짜별로 정렬(버블정렬)
+    For i = 1 To UBound(fileArray, 1) - 1
+        For j = i + 1 To UBound(fileArray, 1)
+            If fileArray(i, 1) < fileArray(j, 1) Then
+                Swap fileArray(i, 1), fileArray(j, 1)
+                Swap fileArray(i, 2), fileArray(j, 2)
+            End If
+        Next j
+    Next i
+    
+    ' 상위 3개 파일 열기
+    For i = 1 To WorksheetFunction.Min(3, UBound(fileArray, 1))
+        Workbooks.Open fileArray(i, 2)
+    Next i
+
+
+
+End Sub
+
+Sub Swap(ByRef a As Variant, ByRef b As Variant)
+    Dim Temp As Variant
+    Temp = a
+    a = b
+    b = Temp
+End Sub
