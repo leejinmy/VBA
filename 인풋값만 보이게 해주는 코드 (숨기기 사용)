@@ -1,0 +1,68 @@
+Sub 입력한행만_띄우기()
+
+
+Rows("21:1000").Hidden = True
+
+Dim 입력창마지막행 As Long
+Dim 입력카운터 As Long
+
+
+
+입력창마지막행 = Cells(Rows.Count, "A").End(xlUp).Row
+
+
+
+
+For 입력카운터 = 2 To 입력창마지막행 'input 마지막행 조사
+
+
+
+Dim F_Find As Range
+Dim F_AD As String
+
+
+On Error Resume Next
+
+Set F_Find = Range("A21:B1000").Find(Cells(입력카운터, 1).Value, LookAT:=xlWhole)  'input 마지막행 조사 Range 값으로 변환
+
+F_AD = F_Find.Address '찾은 결과값의 셀 주소 변환
+   
+
+Counter = 0
+
+
+
+Do
+ 
+
+Counter = Counter + 1
+
+
+
+
+
+Rows(F_Find.Row - 2 & ":" & F_Find.Row + 7).Hidden = False  'Range를 ROW 속성으로 변환하여 숨기기
+
+
+
+Set F_Find = Range("A21:B1000").FindNext(F_Find) 'FindNext 메서드(함수) 'Range 객체
+
+
+Loop While F_AD <> F_Find.Address  'Do While Loop 문 Do While Loop 문은 While 옆의 조건문이 거짓이 될 때까지 실행합니다
+                                   '맨처음 찾았던 주소로 다시 돌아갈때까지 반복문을 실행한다
+                                   '즉 찾을거 다 찾고 다시 위로 돌아가기 전까지 찾는다
+                                   
+
+
+
+
+Next 입력카운터
+
+
+
+
+
+
+
+
+End Sub
