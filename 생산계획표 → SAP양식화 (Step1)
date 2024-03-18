@@ -1,0 +1,65 @@
+
+
+Sub 표변환_STEP1()
+
+
+Dim ws_1 As Worksheet, ws_2 As Worksheet
+Dim R As Long, RS As Long, RR As Long, C As Long
+Dim 기록행 As Long
+Dim ws_2마지막행 As Long
+
+Set ws_1 = Worksheets("Sheet1")
+Set ws_2 = Worksheets("Sheet2")
+
+' 마지막 행 찾기
+RS = ws_1.Cells(ws_1.Rows.Count, "G").End(xlUp).Row
+기록행 = 4
+RR = ws_2.Cells(ws_2.Rows.Count, "A").End(xlUp).Row
+
+' 기존 데이터 삭제
+ws_2.Range(ws_2.Cells(4, "A"), ws_2.Cells(RR, "M")).ClearContents
+
+For R = 4 To RS
+    For C = 11 To 42
+        Dim cellValue As Variant
+        cellValue = ws_1.Cells(R, C).Value
+        ' 조건 확인
+        If cellValue > 0 And Not cellValue Like "[가-힣]*" And Not cellValue Like "[A-Z]*" And ws_1.Cells(R, C).Interior.ColorIndex <> 6 Then
+            
+            ' 데이터 복사
+            With ws_2
+                .Cells(기록행, "A").Value = ws_1.Cells(R, "A").Value
+                .Cells(기록행, "B").Value = ws_1.Cells(R, "B").Value
+                .Cells(기록행, "C").Value = ws_1.Cells(R, "D").Value ' C열 수정
+                .Cells(기록행, "D").Value = ws_1.Cells(R, "E").Value
+                .Cells(기록행, "E").Value = ws_1.Cells(R, "G").Value ' E열 추가
+                .Cells(기록행, "F").Value = ws_1.Cells(R, "H").Value ' F열 추가
+                .Cells(기록행, "G").Value = ws_1.Cells(R, "I").Value ' G열 추가
+                ' H열 추가는 생략되어 있음 - 필요한 로직에 따라 추가해주세요.
+                ' L열 데이터 추가 - 원본 코드에 없으므로 어떤 데이터를 넣어야 할지 명확하지 않음.
+                .Cells(기록행, "J").Value = Replace(ws_1.Cells(3, C).Value, "-", "")
+                .Cells(기록행, "K").Value = Replace(ws_1.Cells(3, C).Value, "-", "")
+                .Cells(기록행, "M").Value = "KG"
+                
+                With .Cells(기록행, "I")
+                    .Value = cellValue
+                    .NumberFormat = "#,###"
+                End With
+            End With
+            
+            기록행 = 기록행 + 1
+        End If
+    Next C
+Next R
+
+' 데이터 정렬
+ws_2마지막행 = ws_2.Cells(ws_2.Rows.Count, "G").End(xlUp).Row
+ws_2.Range(ws_2.Cells(4, 1), ws_2.Cells(ws_2마지막행, 13)).Sort Key1:=ws_2.Range("C4"), Order1:=xlAscending, Key2:=ws_2.Range("J4"), Order2:=xlAscending
+
+    
+ 
+   Call 반제품생성_STEP2
+    
+  
+    
+End Sub
